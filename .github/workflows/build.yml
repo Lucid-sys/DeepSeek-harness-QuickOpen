@@ -1,0 +1,53 @@
+name: build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      # 小体积版:框架依赖,需要目标机装 .NET 9 桌面运行时
+      - name: Publish (framework-dependent)
+        run: >
+          dotnet publish DshLauncher.csproj
+          -c Release -r win-x64
+          -p:PublishSingleFile=true --self-contained false
+          -o out/framework
+
+      # 零依赖版:.NET 运行时也打进去。WPF 的原生库必须一并内嵌,
+      # 否则 publish 会额外吐出一堆 *_cor3.dll 而不是一个文件。
+      - name: Publish (self-contained single file)
+        run: >
+          dotnet publish DshLauncher.csproj
+          -c Release -r win-x64
+          -p:PublishSingleFile=true --self-contained true
+          -p:EnableCompressionInSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -o out/portable
+
+      - name: Show what was produced
+        run: |
+          Get-ChildItem -Recurse out | Select-Object FullName, Length
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: StartDSH-framework-dependent
+          path: out/framework/StartDSH.exe
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: StartDSH-portable
+          path: out/portable/StartDSH.exe
+          if-no-files-found: error

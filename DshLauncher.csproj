@@ -1,0 +1,78 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!--
+      WinExe = Windows 子系统:双击不再弹出 cmd 黑窗口,一切进度都走 WPF 界面。
+      需要看控制台输出时用 console 参数,宿主会 AttachConsole 到调用它的终端。
+    -->
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- 托盘图标用 WinForms 的 NotifyIcon;运行时 WindowsDesktop 9.0.17 已装 -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>StartDSH</AssemblyName>
+    <RootNamespace>DshLauncher</RootNamespace>
+    <AssemblyTitle>DeepSeek Harness 一键启动</AssemblyTitle>
+    <Product>DeepSeek Harness 一键启动器</Product>
+    <Version>1.0.0</Version>
+    <!--
+      不能开 InvariantGlobalization:WPF 的字体缓存会构造 CultureInfo("en"),
+      在 invariant 模式下抛 CultureNotFoundException,窗口一渲染就崩。
+    -->
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+
+    <!-- 源码含中文字面量;显式声明源文件编码,不依赖 BOM 探测 -->
+    <CodePage>65001</CodePage>
+
+    <!--
+      exe 图标:LobeHub 的 DeepSeek 品牌标记(@lobehub/icons 里 DeepSeek 组件用的同一份 path),
+      品牌蓝 #4D6BFE,9 个尺寸(16…256)。
+      由 assets/make-icon.cjs 生成,assets/verify-icon.cjs 校验;改了图标就重跑那两个脚本。
+    -->
+    <ApplicationIcon>app.ico</ApplicationIcon>
+
+    <!-- 单文件发布:框架依赖(.NET 9 + WindowsDesktop 运行时) -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <DebugType>embedded</DebugType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+
+    <!--
+      把源码路径重写成 /src。
+      DebugType=embedded 会把 PDB 打进 exe,而 PDB 里记录着编译时的**绝对源文件路径**
+      (也就是构建者主目录下的路径)。这个 exe 是要发布出去的,所以必须重写:
+      崩溃日志里的堆栈会显示 /src/Program.cs,而不是某个人的主目录。
+    -->
+    <PathMap>$(MSBuildProjectDirectory)=/src</PathMap>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 界面头部的品牌标记(512px,由 assets/make-icon.cjs 生成) -->
+    <Resource Include="assets\logo.png" />
+
+    <!--
+      UseWindowsForms 会把隐式 using 集合整体换成它那一套:丢掉 System.IO / System.Net.Http,
+      塞进 System.Windows.Forms / System.Drawing。后者会让 WPF 里的 Brush、Application
+      到处和 WinForms/GDI+ 的同名类型歧义。所以这里做三件事:
+        - 摘掉 System.Windows.Forms 和 System.Drawing(真正需要的 Wpf/TrayIcon.cs 自己显式 using)
+        - 把 System.IO 加回来(Path / File / Directory / StreamWriter 到处都在用)
+    -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+    <Using Include="System.IO" />
+  </ItemGroup>
+
+  <!--
+    发布产物只有 StartDSH.exe 一个文件(ASCII 内部名)。
+    曾经额外复制一份中文名,但那份副本在旧版本运行时会被系统锁住,导致构建失败;
+    用户实际点的是桌面快捷方式(名字本来就是中文),所以不再需要它。
+    构建脚本会用"重命名交换"更新正在运行的 exe,见 build.cmd。
+  -->
+
+</Project>

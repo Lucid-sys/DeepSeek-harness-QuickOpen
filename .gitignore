@@ -1,0 +1,22 @@
+# 构建产物
+bin/
+obj/
+dist/
+deploy-portable/
+*.user
+.vs/
+
+# 本地构建/发布用的二进制与临时文件。
+# 发布用的 exe 不进 git —— 作为 GitHub Release 的附件上传(见 PUBLISHING.md)。
+release/
+*.old.exe
+*.old-*.exe
+*.next.exe
+
+# 每台机器自己那份配置。里面是绝对路径,由 --setup 生成,不属于仓库。
+dsh-launcher.json
+
+# 运行期产物与私有记录
+assets/preview-256.png
+assets/ui-preview.png
+交付总结.md

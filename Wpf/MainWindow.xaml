@@ -1,0 +1,284 @@
+<Window x:Class="DshLauncher.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DeepSeek Harness"
+        Width="668" Height="624"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display"
+        FontFamily="Microsoft YaHei UI, Segoe UI">
+
+  <Window.Resources>
+    <!-- 浅色配色;与 Wpf/Rows.cs 里的 Palette 保持一致 -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#FF4D6BFE"/>
+    <SolidColorBrush x:Key="TextBrush" Color="#FF1D2330"/>
+    <SolidColorBrush x:Key="MutedBrush" Color="#FF6B7280"/>
+    <SolidColorBrush x:Key="DimBrush" Color="#FFA0A7B8"/>
+    <SolidColorBrush x:Key="OkBrush" Color="#FF12A150"/>
+    <SolidColorBrush x:Key="ErrorBrush" Color="#FFDC2626"/>
+    <SolidColorBrush x:Key="WarnBrush" Color="#FFB45309"/>
+    <SolidColorBrush x:Key="PanelBrush" Color="#FFF7F8FB"/>
+    <SolidColorBrush x:Key="PanelBorderBrush" Color="#FFE7EAF2"/>
+
+    <!-- 细长滚动条:浅色主题下默认的那套灰渐变太扎眼 -->
+    <Style TargetType="ScrollBar">
+      <Setter Property="Width" Value="9"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ScrollBar">
+            <Grid Background="Transparent">
+              <Track x:Name="PART_Track" IsDirectionReversed="True">
+                <Track.Thumb>
+                  <Thumb>
+                    <Thumb.Template>
+                      <ControlTemplate TargetType="Thumb">
+                        <Border CornerRadius="4" Background="#FFC9D0DE" Margin="2,0"/>
+                      </ControlTemplate>
+                    </Thumb.Template>
+                  </Thumb>
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                  <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False"/>
+                </Track.IncreaseRepeatButton>
+                <Track.DecreaseRepeatButton>
+                  <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False"/>
+                </Track.DecreaseRepeatButton>
+              </Track>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="IconButton" TargetType="Button">
+      <Setter Property="Width" Value="34"/>
+      <Setter Property="Height" Value="34"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bg" CornerRadius="8" Background="Transparent">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Bg" Property="Background" Value="#FFF0F2F7"/>
+                <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="PrimaryButton" TargetType="Button">
+      <Setter Property="FontSize" Value="12.5"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Padding" Value="18,8"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bg" CornerRadius="8" Background="{StaticResource AccentBrush}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Bg" Property="Background" Value="#FF3D5BF0"/>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Bg" Property="Background" Value="#FFEDEFF4"/>
+                <Setter Property="Foreground" Value="{StaticResource DimBrush}"/>
+                <Setter Property="Cursor" Value="Arrow"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="GhostButton" TargetType="Button">
+      <Setter Property="FontSize" Value="12.5"/>
+      <Setter Property="Foreground" Value="#FF4B5563"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Padding" Value="16,8"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bg" CornerRadius="8" Background="#FFF2F4F8" BorderBrush="#FFDFE3EC" BorderThickness="1">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Bg" Property="Background" Value="#FFE9ECF3"/>
+                <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Bg" Property="Background" Value="#FFF7F8FB"/>
+                <Setter TargetName="Bg" Property="BorderBrush" Value="#FFEDEFF4"/>
+                <Setter Property="Foreground" Value="{StaticResource DimBrush}"/>
+                <Setter Property="Cursor" Value="Arrow"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Window.Resources>
+
+  <!-- 外边距给投影留位置 -->
+  <Grid Margin="16">
+    <Border CornerRadius="16" Background="#FFFFFFFF" BorderBrush="#FFE4E7EE" BorderThickness="1">
+      <Border.Effect>
+        <DropShadowEffect BlurRadius="26" ShadowDepth="2" Direction="270" Opacity="0.22" Color="#FF6B7280"/>
+      </Border.Effect>
+
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ===== 头部:品牌标记 + 标题,可拖动 ===== -->
+        <Grid Grid.Row="0" x:Name="HeaderBar" Background="Transparent"
+              MouseLeftButtonDown="Header_MouseLeftButtonDown">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+
+          <!--
+            这里就是 @lobehub/icons 里 <DeepSeek size={56} /> 的那枚标记:
+            同一份 SVG path,品牌蓝 #4D6BFE,由 assets/make-icon.cjs 栅格化成 logo.png,
+            同时也被栅格化进 app.ico 作为 exe 图标。
+            直接放标记本身 —— 不再套一个蓝色圆底(蓝底上的蓝标记基本看不见)。
+          -->
+          <Image x:Name="LogoImage" Grid.Column="0"
+                 Source="pack://application:,,,/assets/logo.png" Width="56" Height="56"
+                 Margin="20,16,14,14" VerticalAlignment="Center"
+                 RenderOptions.BitmapScalingMode="HighQuality"/>
+
+          <StackPanel Grid.Column="1" VerticalAlignment="Center">
+            <TextBlock Text="DeepSeek Harness" FontSize="17.5" FontWeight="SemiBold"
+                       Foreground="{StaticResource TextBrush}"/>
+            <TextBlock x:Name="SubtitleText" Text="准备中…" FontSize="12" Margin="0,3,0,0"
+                       Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis"/>
+          </StackPanel>
+
+          <Button Grid.Column="2" Content="✕" Style="{StaticResource IconButton}"
+                  Click="Close_Click" Margin="0,12,12,0" VerticalAlignment="Top"
+                  ToolTip="隐藏到托盘(服务继续运行)"/>
+        </Grid>
+
+        <!-- ===== 错误横幅(默认隐藏)===== -->
+        <Border x:Name="ErrorPanel" Grid.Row="1" Margin="20,4,20,0" CornerRadius="10"
+                Background="#FFFEF3F3" BorderBrush="#FFF7C9C9" BorderThickness="1"
+                Padding="14,12" Visibility="Collapsed">
+          <StackPanel>
+            <TextBlock x:Name="ErrorTitleText" Foreground="#FFB91C1C" FontSize="13"
+                       FontWeight="SemiBold" TextWrapping="Wrap"/>
+            <TextBlock x:Name="ErrorDetailText" Foreground="#FF9B4A4A" FontSize="11.5"
+                       Margin="0,6,0,0" TextWrapping="Wrap" MaxHeight="150"/>
+          </StackPanel>
+        </Border>
+
+        <!-- ===== 进度步骤 ===== -->
+        <Border Grid.Row="2" Margin="20,14,20,0" CornerRadius="10"
+                Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource PanelBorderBrush}"
+                BorderThickness="1" Padding="2,8">
+          <ScrollViewer MaxHeight="216" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="StepsList">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Grid Margin="14,3">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="20"/>
+                      <ColumnDefinition Width="96"/>
+                      <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Glyph}" Foreground="{Binding Brush}"
+                               FontSize="12.5" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="{Binding Label}"
+                               Foreground="{StaticResource TextBrush}" FontSize="12.5"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="{Binding Detail}"
+                               Foreground="{StaticResource MutedBrush}" FontSize="12"
+                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                               ToolTip="{Binding Detail}"/>
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </Border>
+
+        <!-- ===== 进度条 ===== -->
+        <Grid Grid.Row="3" Margin="20,14,20,0">
+          <!--
+            ClipToBounds 是必须的:等待期间的"扫动"靠平移指示条实现,
+            不裁剪的话它会平移出轨道、画到卡片外面去。
+          -->
+          <Grid x:Name="TrackHost" Height="6" ClipToBounds="True" SizeChanged="TrackHost_SizeChanged">
+            <Border CornerRadius="3" Background="#FFE6E9F0"/>
+            <Border x:Name="Indicator" CornerRadius="3" Width="0"
+                    Background="{StaticResource AccentBrush}" HorizontalAlignment="Left">
+              <Border.RenderTransform>
+                <TranslateTransform x:Name="IndicatorTransform"/>
+              </Border.RenderTransform>
+            </Border>
+          </Grid>
+        </Grid>
+
+        <!-- ===== 日志:与那个最小化窗口内容一致 ===== -->
+        <Border Grid.Row="4" Margin="20,14,20,0" CornerRadius="10"
+                Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource PanelBorderBrush}"
+                BorderThickness="1">
+          <ScrollViewer x:Name="LogScroll" VerticalScrollBarVisibility="Auto" Padding="12,10">
+            <ItemsControl x:Name="LogList">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Text}" Foreground="{Binding Brush}"
+                             FontFamily="Cascadia Mono,Consolas,Courier New"
+                             FontSize="11.5" TextWrapping="NoWrap"/>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </Border>
+
+        <!-- ===== 底部 ===== -->
+        <Grid Grid.Row="5" Margin="20,14,20,18">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+
+          <TextBlock x:Name="StatusText" Grid.Column="0" Foreground="{StaticResource MutedBrush}"
+                     FontSize="12" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                     Text="正在启动…"/>
+
+          <StackPanel Grid.Column="1" Orientation="Horizontal">
+            <Button x:Name="OpenButton" Content="打开 GUI" Style="{StaticResource PrimaryButton}"
+                    Click="Open_Click" IsEnabled="False"/>
+            <Button x:Name="StopButton" Content="停止服务" Style="{StaticResource GhostButton}"
+                    Click="Stop_Click" IsEnabled="False" Margin="8,0,0,0"/>
+          </StackPanel>
+        </Grid>
+      </Grid>
+    </Border>
+  </Grid>
+</Window>
