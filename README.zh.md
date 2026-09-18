@@ -1,7 +1,9 @@
 # DeepSeek Harness QuickOpen
 
 [English](README.md) | 中文
-
+<p align="center">
+<img width="623" height="582" alt="SnowShot_2026-09-19_00-01-16" src="https://github.com/user-attachments/assets/25e7c5e5-8057-4c40-8fb5-6fd86e4e73b1" />
+</p>
 DeepSeek Harness QuickOpen 是给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 用的 Windows 一键启动器。
 
 双击一个图标:启动器先自检环境,再把本地 `dsh web` 服务起起来,并用默认浏览器直接打开 Web UI。
