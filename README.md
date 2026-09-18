@@ -85,18 +85,6 @@ Dropping a folder onto the `.exe` uses it as the session's working directory.
 Configuration resolves as: command line > environment (`DSH_REPO`, `DSH_WORKSPACE`, `DSH_PORT`,
 `DSH_HOST`, `DSH_PROXY`) > `dsh-launcher.json` next to the exe > built-in defaults.
 
-## Network
-
-By default the launcher gives the harness a **proxy-free environment**, so it connects directly. It
-changes nothing on your machine — user-level `HTTP_PROXY`, system proxy settings and proxy tools are
-left untouched; they are simply not passed down.
-
-The reason is concrete: DeepSeek Harness installs `HTTP_PROXY` / `HTTPS_PROXY` from its launch
-environment into its own global dispatcher, so every outbound request — including model API calls —
-goes through that proxy. On a machine where a proxy is configured for other reasons, the harness
-ends up bound to it without anyone asking.
-
-Use `--print-env` to see exactly what the child process receives.
 
 ## Logs
 
@@ -127,8 +115,7 @@ Use `--print-env` to see exactly what the child process receives.
 
 ## Contributing
 
-Issues and pull requests are welcome. Before pushing, run the private-data check in
-[PUBLISHING.md](PUBLISHING.md) — it is what keeps machine-specific paths out of the repository.
+Issues and pull requests are welcome. 
 
 ## License
 
