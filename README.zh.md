@@ -5,10 +5,9 @@
 DeepSeek Harness QuickOpen 是给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 用的 Windows 一键启动器。
 
 双击一个图标:启动器先自检环境,再把本地 `dsh web` 服务起起来,并用默认浏览器直接打开 Web UI。
-不用终端、不用敲 `pnpm dsh web`,**也不会弹出 cmd 黑窗口**。
+不用终端、不用敲 `pnpm dsh web`。
 
 > 非官方第三方工具,与 DeepSeek 官方没有隶属、背书或支持关系。
-> 品牌与商标说明见 [NOTICE.md](NOTICE.md)。
 
 ## 状态
 
@@ -22,7 +21,9 @@ harness 的启动方式变了,需要跟着改的就是这个启动器。
 
 ### 用发布好的程序
 
-从 [Releases](../../releases) 下载 `StartDSH.exe`,放到任意可写目录,双击即可。
+针对从源码运行的DSH
+从 [Releases](../../releases) 下载 `StartDSH.exe`或者`StartDSH-portable.exe`,放到任意可写目录,双击即可。
+建议使用**StartDSH-portable.exe**
 
 | 文件 | 目标机器需要 | 体积 |
 |---|---|---|
@@ -44,7 +45,7 @@ build.cmd /selfcontained   :: 零依赖单文件,约 65 MB
 产物都是 `dist\StartDSH.exe`。**正在运行的启动器也能就地更新** —— 构建会把运行中的镜像改名挪开、
 再把新版本放到位,所以重新构建不会打断正在跑的服务。
 
-## 在一台新机器上首次运行
+## 其余运行方式
 
 启动器与路径无关:唯一随机器变的是"`deepseek-harness` 检出在哪",而那是**配置**,不是编译进去的东西。
 
@@ -83,16 +84,6 @@ StartDSH.exe --setup --repo "D:\code\deepseek-harness"   :: 不弹选择框
 配置优先级:命令行 > 环境变量(`DSH_REPO`、`DSH_WORKSPACE`、`DSH_PORT`、`DSH_HOST`、`DSH_PROXY`)
 > exe 同目录的 `dsh-launcher.json` > 内置默认。
 
-## 网络
-
-启动器默认给 harness 一个**不含任何代理变量的环境**,也就是直连。它**不修改你机器上的任何设置** ——
-用户级 `HTTP_PROXY`、系统代理、代理软件全都原封不动,只是不往下传。
-
-原因很具体:DeepSeek Harness 会把启动环境里的 `HTTP_PROXY` / `HTTPS_PROXY` 装进自己进程的全局
-dispatcher,于是**所有出站请求(包括模型 API)都走那个代理**。在一台因为别的原因配了代理的机器上,
-harness 就会在无人察觉的情况下被绑上去。
-
-想看子进程到底拿到什么,用 `--print-env`。
 
 ## 日志
 
@@ -100,34 +91,5 @@ harness 就会在无人察觉的情况下被绑上去。
 %LOCALAPPDATA%\DeepSeekHarness\launcher.log          每次运行的日志:自检、harness 输出、失败原因
 %LOCALAPPDATA%\DeepSeekHarness\launcher-error.log    仅启动期崩溃
 ```
-
-## 故障排查
-
-| 现象 | 处理 |
-|---|---|
-| 双击后**什么都没出现** | 看上面那个 `launcher-error.log` |
-| 弹"需要安装 .NET Desktop Runtime" | 换成 `StartDSH-portable.exe` |
-| 提示"这里不像 deepseek-harness 检出" | 目录选错了:`StartDSH.exe --setup` 重新选 |
-| 提示"缺少 apps/web/dist/index.html" | 在该检出里跑 `pnpm run build`,或 `StartDSH.exe --rebuild` |
-| 提示"缺少 node_modules\.pnpm" | 在该检出里跑 `pnpm install`,或 `StartDSH.exe --install` |
-| 提示"Node 版本不满足" | 需要 `^22.19.0 \|\| >=24.0.0`(**23.x 不支持**) |
-| 提示"端口 3080 被占用" | `StartDSH.exe --port 3099` |
-| 想把两个 exe 拷到别的机器 | 见 Releases 里的 `install-guide-zh.md` |
-
-## 文档
-
-- [PUBLISHING.md](PUBLISHING.md) —— 如何发布这个仓库、发一个 Release。
-- [NOTICE.md](NOTICE.md) —— 品牌、图标与商标说明。
-- [docs/design.md](docs/design.md) —— 为什么这样设计(设计说明)。
-- Releases 里还附了一份 `install-guide-zh.md`,给目标机器看的一页说明。
-
-## 参与
-
-欢迎提 Issue 和 PR。推送之前请先跑一遍 [PUBLISHING.md](PUBLISHING.md) 里的隐私自查 ——
-仓库里不该出现任何一台机器特有的路径。
-
-## 许可
-
-[MIT](LICENSE)
-
-第三方素材与商标见 [NOTICE.md](NOTICE.md)。
+## 声明
+作者非专业人员，本项目由AI独立完成
