@@ -1,7 +1,9 @@
 # DeepSeek Harness QuickOpen
 
 English | [中文](README.zh.md)
-
+<p align="center">
+<img width="623" height="582" alt="SnowShot_2026-09-19_00-01-16" src="https://github.com/user-attachments/assets/25e7c5e5-8057-4c40-8fb5-6fd86e4e73b1" />
+</p>
 DeepSeek Harness QuickOpen is a one-click Windows launcher for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness).
 
 Double-click an icon: the launcher self-checks the environment, starts the local `dsh web` server, and opens the default browser straight into the Web UI. No terminal, no `pnpm dsh web`, and no console window.
